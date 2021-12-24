@@ -1,14 +1,24 @@
-import { computeHeadingLevel } from '@testing-library/react';
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import RatingSelect from './RatingSelect';
 import Button from './shared/Button';
 import Card from "./shared/Card";
+import FeedbackContext from '../context/FeedbackContext';
 
-function FeedbackForm({ handleAdd }) {
+function FeedbackForm() {
   const [text, setText]  = useState('');
   const [rating, setRating]  = useState(10);
   const [btnDisabled, setBtnDisabled]  = useState(true);
   const [message, setMessage]  = useState('');
+
+  const { addFeedback, feedbackEditState } = useContext(FeedbackContext);
+  
+  useEffect(() => {
+    if(feedbackEditState.edit === true) {
+      setBtnDisabled(false);
+      setText(feedbackEditState.item.text);
+      setRating(feedbackEditState.item.rating);
+    }
+  }, [feedbackEditState])
 
   const handleTextChange = (e) => {
     // Checking against the current input value
@@ -37,7 +47,7 @@ function FeedbackForm({ handleAdd }) {
         rating
       }
 
-      handleAdd(newFeedback);
+      addFeedback(newFeedback);
 
       setText('');
     }
